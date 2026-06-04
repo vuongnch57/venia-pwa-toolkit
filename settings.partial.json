@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "deny": [
+      "Glob(node_modules/**)",
+      "Grep(node_modules/**)",
+      "Glob(vendor/**)",
+      "Grep(vendor/**)",
+      "Read(generated/**)",
+      "Glob(generated/**)",
+      "Grep(generated/**)",
+      "Read(var/**)",
+      "Glob(var/**)",
+      "Grep(var/**)",
+      "Read(pub/static/**)",
+      "Glob(pub/static/**)",
+      "Grep(pub/static/**)"
+    ]
+  }
+}

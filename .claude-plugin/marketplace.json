@@ -1,0 +1,11 @@
+{
+  "name": "venia-pwa-toolkit",
+  "owner": { "name": "hoangvuong94st" },
+  "plugins": [
+    {
+      "name": "venia-pwa-toolkit",
+      "source": "./",
+      "description": "Skills + infra templates for Magento PWA Studio / Venia override-based storefronts."
+    }
+  ]
+}
