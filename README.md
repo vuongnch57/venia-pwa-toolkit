@@ -25,12 +25,35 @@ patterns, conventions, and the day-to-day workflows as skills.
 
 ## Install
 
-From a target Venia project:
+> Run these in the **terminal `claude` CLI** (the `/plugin` command is not available
+> in the VSCode/IDE extension chat).
+>
+> Enter each command on its own line and press Enter — do **not** paste both at once,
+> or `marketplace add` will treat the second line as part of its argument and fail
+> with `... is not a valid repository name`.
+
+**1. Register this repo as a marketplace** (pick one form):
 
 ```
-/plugin marketplace add <git-url-or-local-path-to-this-repo>
+/plugin marketplace add vuongnch57/venia-pwa-toolkit
+```
+
+```
+/plugin marketplace add https://github.com/vuongnch57/venia-pwa-toolkit.git
+```
+
+```
+/plugin marketplace add ~/Documents/Workspace/personal/venia-pwa-toolkit
+```
+
+**2. Then install the plugin:**
+
+```
 /plugin install venia-pwa-toolkit
 ```
+
+**3. Verify** — ask *"override a Venia component"* and confirm the `venia-override`
+skill fires, or check `/help`.
 
 Then run the **venia-bootstrap** skill once to wire the resolver, aliases, and
 driver mapping. Paste `templates/CLAUDE.partial.md` into the project's CLAUDE.md and
