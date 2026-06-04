@@ -42,10 +42,6 @@ patterns, conventions, and the day-to-day workflows as skills.
 /plugin marketplace add https://github.com/vuongnch57/venia-pwa-toolkit.git
 ```
 
-```
-/plugin marketplace add ~/Documents/Workspace/personal/venia-pwa-toolkit
-```
-
 **2. Then install the plugin:**
 
 ```
