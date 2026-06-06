@@ -29,11 +29,22 @@ project. Run once per project. The templates referenced live in this plugin's
 6. **Driver mapping.** In `package.json`, add the `browser` field:
    `{ "@magento/venia-drivers": "src/drivers" }` and create `src/drivers/index.js`
    re-exporting `@magento/venia-ui/lib/drivers`.
-7. **Build env.** Note in scripts/docs that production build may need
-   `NODE_OPTIONS=--openssl-legacy-provider`. If webpack chokes on `??` / `?.`,
-   rewrite with explicit checks and `||`.
-8. **Conventions.** Paste `templates/CLAUDE.partial.md` into the project's CLAUDE.md.
-   Merge `settings.partial.json` deny-globs into `.claude/settings.json`.
+7. **Theme tokens.** Copy `templates/theme.js` (responsive `screens` scaffold) to the
+   project root and have `tailwind.config.js` consume it (extending
+   `@magento/pwa-theme-venia`). Add the brand's tokens under `extend` (colors,
+   fontFamily, fontSize, etc.). Remember: only utilities defined here exist — add a
+   `transitionDuration` key before using a new `duration-*` class (this is why
+   `duration-150` fails by default).
+8. **Custom server (optional).** Copy `templates/serve.js` to the project root for a
+   production server with immutable static caching, image-opt, gzip, and custom
+   HTTPS/port handling. Wire a script (e.g. `"start:c": "node serve.js"`). It depends on
+   a local `createUpwardServer.js` (or adapt to `@magento/upward-js`); add custom
+   middleware inside `before(app)`.
+9. **Build env.** Note in scripts/docs that production build may need
+   `NODE_OPTIONS=--openssl-legacy-provider`. `??` / `?.` fail in buildbus-babel files
+   under `src/overrides/**` and `src/talons/**` — use explicit checks and `||` there.
+10. **Conventions.** Paste `templates/CLAUDE.partial.md` into the project's CLAUDE.md.
+    Merge `settings.partial.json` deny-globs into `.claude/settings.json`.
 
 ## Verify
 

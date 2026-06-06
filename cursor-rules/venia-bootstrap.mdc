@@ -14,6 +14,8 @@ One-time per project. Templates live in this toolkit's `templates/` directory.
 4. **Rename resolver namespace** from `myorg/...` to your slug.
 5. **Path aliases** in webpack `resolve.alias` AND `jsconfig.json`: `@/`→`src`, `@components`, `@utils`, `@hooks`, `@talons`, `@overrides`, `@i18n`.
 6. **Driver mapping** — `package.json` `browser`: `{ "@magento/venia-drivers": "src/drivers" }`; create `src/drivers/index.js` re-exporting `@magento/venia-ui/lib/drivers`.
-7. **Build env** — note `NODE_OPTIONS=--openssl-legacy-provider` for production; rewrite `??`/`?.` with explicit checks if webpack chokes.
+7. **Theme tokens** — copy `templates/theme.js` (responsive `screens` scaffold) to root, consumed by `tailwind.config.js` (extends `@magento/pwa-theme-venia`). Add brand tokens under `extend` (colors/fonts/sizes). Only utilities defined here exist (add a `transitionDuration` key before using a new `duration-*`).
+8. **Custom server (optional)** — copy `templates/serve.js` to root (immutable static caching, image-opt, gzip, HTTPS/port handling); wire `"start:c": "node serve.js"`. Depends on a local `createUpwardServer.js`; add custom middleware in `before(app)`.
+9. **Build env** — note `NODE_OPTIONS=--openssl-legacy-provider` for production; `??`/`?.` fail in `src/overrides/**` and `src/talons/**` (buildbus-babel) — use explicit checks and `||`.
 
 Verify with a trivial override mirrored under `src/overrides/venia-ui/...` and confirm the resolver log line `...-override-resolver path: <old> => <new>` appears during build.

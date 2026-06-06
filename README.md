@@ -11,7 +11,7 @@ day-to-day workflows. Packaged for **Claude Code** (as a plugin with skills) and
 |---|---|
 | `skills/` | Claude Code on-demand workflows (override, route, pagebuilder type, splice, talon, i18n, css, bootstrap) |
 | `cursor-rules/` | Cursor `.mdc` rules — copy into a project's `.cursor/rules/` (mirrors the 8 skills + conventions) |
-| `templates/` | Copy-in infra: `VeniaResolverPlugin.js`, `local-intercept.template.js`, `extend-configured-route.js`, `CLAUDE.partial.md` |
+| `templates/` | Copy-in infra: `VeniaResolverPlugin.js`, `local-intercept.template.js`, `extend-configured-route.js`, `serve.js`, `theme.js`, `CLAUDE.partial.md` |
 | `settings.partial.json` | Reusable permission deny-globs for Magento projects |
 
 ## Skills
