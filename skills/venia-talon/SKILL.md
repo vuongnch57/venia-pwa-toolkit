@@ -8,6 +8,14 @@ description: Add a new talon plus co-located GraphQL for Venia behavior that is 
 Use for **new** behavior. To **replace** a core Peregrine talon, use `venia-override`
 (mirror under `src/overrides/peregrine/...`) instead.
 
+**Why talons exist:** business logic, queries, callbacks, and non-trivial state belong
+in a `use*` hook, not the component. When a component starts accumulating those, extract
+them here and keep the JSX presentational.
+
+> **Syntax gotcha:** files under `src/talons/**` (and `src/overrides/**`) are processed
+> by the buildbus babel loader, which **rejects `??` and `?.`** (`Module parse failed:
+> Unexpected token`). Use explicit checks and `||` instead.
+
 ## Steps
 
 1. **Create `src/talons/<Feature>/use<Feature>.js`** — the hook.

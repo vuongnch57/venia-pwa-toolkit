@@ -61,6 +61,16 @@
 - **Split when it grows.** Extract sub-components (own file) once a component takes
   on a second responsibility or a JSX block becomes independently reusable — prefer
   small, composable components over one large one.
+- **Logic lives in talons/hooks, components stay presentational.** When a component
+  accumulates queries, callbacks, or non-trivial state, move it into a `use*` hook
+  (`src/talons/...` or a Peregrine override) and keep the JSX thin.
+- **DRY.** Extract repeated logic into a shared function/util; reuse existing helpers
+  in `src/utils/` before writing a new one.
+- **Responsive by default.** Every UI change must work at mobile **and** desktop.
+  When you adjust one breakpoint, verify the other still holds — don't fix mobile and
+  break desktop (or vice-versa).
+- **Surface API errors inline.** Render server/mutation errors under the relevant
+  form field (inside the form), not only as a toast or `console.error`.
 
 ## i18n
 
@@ -73,11 +83,23 @@
 
 - Separator is `_` (e.g. `md_pt-10`). Use `composes: ... from global` in `.module.css`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
+- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
+  many utilities (e.g. `duration-*` / `transition-duration` → `The duration-150 class
+  does not exist`). Verify the utility is enabled in `theme.js`/the preset, or define
+  it in an `@layer`.
+- **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply
+  grid }`) — it creates a circular dependency and fails the build.
+- **Use theme colors, not the default Tailwind palette.** Use the project tokens from
+  `theme.js` (e.g. `primary`, `black-light`), not `gray-700` / `gray-900` / etc.
 
 ## Loading States
 
-- Prefer a **page shimmer** for initial load; avoid `fullPageLoadingIndicator` as
-  the default. Align shimmer spacing with the real page (header/title).
+- Prefer a **shimmer skeleton that mirrors the real page/section layout** while an API
+  loads — match the actual structure (header, title, rows, cards) and spacing so the
+  layout doesn't jump when data arrives. Avoid `fullPageLoadingIndicator` as the default.
+- This applies to **any async-populated UI**, not just initial page load — modals and
+  sections that fetch data need a loading state; never render an empty shell while
+  fetching.
 
 ## Icons
 
@@ -91,4 +113,7 @@
 
 - Production build may set `NODE_OPTIONS=--openssl-legacy-provider` for OpenSSL
   compatibility — preserve if upgrading Node/webpack.
-- If webpack fails on `??` / `?.`, rewrite with explicit checks and `||` in that file.
+- **`??` / `?.` fail in files processed by the buildbus babel loader** — notably
+  anything under `src/overrides/**` and `src/talons/**` (`Module parse failed:
+  Unexpected token`). In those files, use explicit checks and `||` instead of nullish
+  coalescing / optional chaining.

@@ -11,13 +11,27 @@ description: Style a Venia component with Tailwind in CSS modules, handle loadin
 - Compose Tailwind classes: `composes: ... from global` inside `.module.css`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
+- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
+  many utilities — `duration-*` / `transition-duration` is the recurring one
+  (`The duration-150 class does not exist`). Verify the utility is enabled in
+  `theme.js`/the preset, or define it inside an `@layer`.
+- **Never `@apply` a utility inside a class of the same name** — `.grid { @apply grid }`
+  creates a circular dependency and fails the build. Rename the class or apply on a
+  different selector.
+- **Use theme colors, not the default Tailwind palette.** Use project tokens from
+  `theme.js` (e.g. `primary`, `black-light`, `primary-superLight`), not `gray-700` /
+  `gray-900` / etc.
+- **Responsive by default** — style for mobile and desktop; when adjusting one
+  breakpoint, confirm the other still holds.
 
 ## Loading states
 
-- Prefer a **page shimmer** for initial load; avoid `fullPageLoadingIndicator` as
-  the default.
-- Align shimmer spacing with the real page (header height, title position) so the
-  layout doesn't jump on load.
+- Prefer a **shimmer skeleton that mirrors the real layout** while an API loads — match
+  the actual structure (header, title, rows, cards) and spacing so the layout doesn't
+  jump when data arrives. Avoid `fullPageLoadingIndicator` as the default.
+- Applies to **any async-populated UI**, not just initial page load — modals and
+  sections that fetch data need a loading state; never render an empty shell while
+  fetching.
 
 ## Icons (hard rule)
 

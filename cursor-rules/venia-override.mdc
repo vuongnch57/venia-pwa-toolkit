@@ -14,5 +14,6 @@ The resolver swaps `@magento/<package>/lib/<path>` for `src/overrides/<package>/
 4. **CSS is the exception** — change `.module.css` imports to local `./...module.css`, copy the CSS file too if styling.
 5. **Split mixed files** — if the forked file declares multiple components, split into one-per-file.
 6. **Wrap copy in react-intl** — any user-facing string must use `<FormattedMessage />` / `formatMessage`.
+7. **No `??` / `?.`** — `src/overrides/**` is buildbus-babel-processed and rejects nullish coalescing / optional chaining (`Module parse failed: Unexpected token`). Use explicit checks and `||`.
 
 Use this for replacing core behavior. For new additive behavior use a talon in `src/talons/` or a component in `src/components/`. To swap a whole module export use the targetable-splice approach.

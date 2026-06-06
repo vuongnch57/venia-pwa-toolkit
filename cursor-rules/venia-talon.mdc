@@ -8,6 +8,10 @@ alwaysApply: false
 
 Use for **new** behavior. To **replace** a core Peregrine talon, mirror it under `src/overrides/peregrine/...` (override resolver) instead.
 
+Business logic, queries, callbacks, and non-trivial state belong in a `use*` hook, not the component — extract them here and keep JSX presentational.
+
+> **Syntax gotcha:** `src/talons/**` (and `src/overrides/**`) are buildbus-babel-processed and **reject `??` / `?.`** (`Module parse failed: Unexpected token`). Use explicit checks and `||`.
+
 1. Create `src/talons/<Feature>/use<Feature>.js` — the hook.
 2. Co-locate GraphQL in `src/talons/<Feature>/<feature>.gql.js`.
 3. Wire UI from `src/components/<Feature>/` (one component per file; split sub-components).

@@ -11,10 +11,14 @@ alwaysApply: false
 - Compose with `composes: ... from global` inside `.module.css`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
+- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or define in an `@layer`.
+- **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply grid }`) — circular dependency, build fails.
+- **Use theme colors from `theme.js`** (`primary`, `black-light`, …), not the default Tailwind palette (`gray-700`, etc.).
+- **Responsive by default** — mobile AND desktop; when adjusting one breakpoint, confirm the other still holds.
 
 ## Loading states
-- Prefer a page **shimmer** for initial load; avoid `fullPageLoadingIndicator`.
-- Align shimmer spacing with the real page (header height, title position).
+- Prefer a **shimmer skeleton that mirrors the real layout** while an API loads (match structure + spacing so layout doesn't jump). Avoid `fullPageLoadingIndicator`.
+- Applies to **any async-populated UI** (modals, sections), not just initial load — never render an empty shell while fetching.
 
 ## Icons (hard rule)
 - New icons in `src/components/Icons/` as JS components with **inline SVG**.

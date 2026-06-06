@@ -25,6 +25,9 @@ when the mirrored file exists. To override, recreate the file at the mirrored pa
    copying the mixed file verbatim.
 6. **Wrap copy in react-intl.** Any user-facing string you touch must go through
    `<FormattedMessage />` / `formatMessage` (see `venia-i18n`).
+7. **No `??` / `?.` in the forked file.** Files under `src/overrides/**` are processed
+   by the buildbus babel loader, which rejects nullish coalescing / optional chaining
+   (`Module parse failed: Unexpected token`). Use explicit checks and `||`.
 
 ## When NOT to use this
 
