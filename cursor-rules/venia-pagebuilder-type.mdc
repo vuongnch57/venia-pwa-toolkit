@@ -1,0 +1,26 @@
+---
+description: Register a custom or extended Page Builder content type in a Venia storefront.
+globs: src/overrides/pagebuilder/**, src/targets/**
+alwaysApply: false
+---
+
+# Register a Page Builder content type
+
+Tap `customContentTypes.tap` in `src/targets/local-intercept.js`; implementation under `src/overrides/pagebuilder/`.
+
+## Custom type
+1. Implement under `src/overrides/pagebuilder/ContentTypes/<Type>/`: a `<type>ContentType.js` config, a masked-render config, and a frontend component.
+2. Register:
+   ```js
+   targets.of('@magento/pagebuilder').customContentTypes.tap(contentTypes => {
+     contentTypes.add({
+       contentType: 'flash_deal',
+       importPath: 'src/overrides/pagebuilder/ContentTypes/FlashDeal/flashDealContentType.js'
+     });
+   });
+   ```
+
+## Extending a built-in type
+Fork the Venia/Pagebuilder component via the override resolver (mirror under `src/overrides/pagebuilder/...`) rather than registering a new type.
+
+Rules: one component per file; wrap copy in react-intl; keep `@magento/...` imports intact.

@@ -1,0 +1,32 @@
+---
+description: Replace a default Venia export or inject an app-level provider using Targetables (esModule spliceSource / reactComponent insertBeforeSource).
+globs: src/targets/**
+alwaysApply: false
+---
+
+# Targetable splice / provider injection
+
+For cases the file-mirror resolver can't handle: replacing a module's export wholesale or inserting code into a core file.
+
+## Replace a default export
+```js
+const before = "export { default } from '../../components/SearchPage';";
+const customPath = path
+  .resolve(__dirname, '..', 'overrides', 'venia-ui', 'components', 'SearchPage', 'searchPage.js')
+  .replace(/\\/g, '/'); // forward slashes required
+targetables
+  .esModule('@magento/venia-ui/lib/RootComponents/Search/index.js')
+  .spliceSource({ before, insert: `export { default } from '${customPath}';`, remove: before.length });
+```
+- `remove` is a CHARACTER LENGTH — derive it from `before`.
+- Always `.replace(/\\/g, '/')` absolute paths.
+
+## Inject providers
+```js
+const ContextProvider = targetables.reactComponent('@magento/venia-ui/lib/components/App/contextProvider.js');
+const P = ContextProvider.addImport("StoreContextProvider from 'src/contexts/store'");
+ContextProvider.insertBeforeSource('const ContextProvider = ({ children }) => {', `contextProviders.push(${P});\n`);
+```
+Repeat per provider; providers live in `src/contexts/`.
+
+If you're only changing a component's body (not export wiring), fork it with the override resolver instead — simpler and less brittle.

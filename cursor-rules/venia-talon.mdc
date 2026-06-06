@@ -1,0 +1,21 @@
+---
+description: Add a new talon plus co-located GraphQL for new Venia behavior (not replacing a core Peregrine talon).
+globs: src/talons/**, src/overrides/peregrine/**
+alwaysApply: false
+---
+
+# Add a talon (+ GraphQL)
+
+Use for **new** behavior. To **replace** a core Peregrine talon, mirror it under `src/overrides/peregrine/...` (override resolver) instead.
+
+1. Create `src/talons/<Feature>/use<Feature>.js` — the hook.
+2. Co-locate GraphQL in `src/talons/<Feature>/<feature>.gql.js`.
+3. Wire UI from `src/components/<Feature>/` (one component per file; split sub-components).
+4. Import via aliases — `@/talons/...`, `@/components/...`.
+5. User-facing strings the talon returns should be `{ id, defaultMessage }` shaped (rendered with `formatMessage`), especially validator messages.
+
+| Situation | Approach |
+|---|---|
+| New hook/logic, no core file replaced | talon in `src/talons/` (this) |
+| Replace a core Peregrine talon | override resolver (`src/overrides/peregrine/`) |
+| Replace a whole module export | targetable splice |

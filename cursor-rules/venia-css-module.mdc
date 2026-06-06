@@ -1,0 +1,22 @@
+---
+description: Tailwind-in-CSS-modules conventions, loading shimmers, and SVG icon rules for Venia.
+globs: src/**/*.module.css, src/components/Icons/**
+alwaysApply: false
+---
+
+# Tailwind in CSS modules + loading + icons
+
+## Tailwind-in-CSS-modules
+- Separator is `_` (e.g. `md_pt-10`, `hover_text-black`).
+- Compose with `composes: ... from global` inside `.module.css`.
+- Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
+- In a component override, import the **local** `./component.module.css`.
+
+## Loading states
+- Prefer a page **shimmer** for initial load; avoid `fullPageLoadingIndicator`.
+- Align shimmer spacing with the real page (header height, title position).
+
+## Icons (hard rule)
+- New icons in `src/components/Icons/` as JS components with **inline SVG**.
+- **Never use `react-feather`** (or other icon libraries) for app icons.
+- **From Figma:** when a design node is an SVG icon, clone it into a JS icon component under `src/components/Icons/` — inline the SVG markup. Do not substitute a react-feather equivalent or render the raw asset.

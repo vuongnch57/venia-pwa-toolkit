@@ -1,0 +1,16 @@
+---
+description: react-intl rules for Venia — all user-facing copy must be wrapped; validators return message descriptors.
+globs: src/**/*.js, src/**/*.jsx
+alwaysApply: false
+---
+
+# i18n / react-intl (hard rule)
+
+**All user-facing text goes through react-intl.** This is a gate, not a suggestion.
+
+1. **No bare string literals** in JSX text or in `alt`, `aria-label`, `placeholder`, `title`, and other meaningful labels. Wrap each in `<FormattedMessage id="..." defaultMessage="..." />` or `formatMessage({ id, defaultMessage })`.
+2. **Validators return `{ id, defaultMessage }`, not strings** — with the Field `Message` override, validators used with `combine` must return the message-descriptor object.
+3. **Statically extractable** — literal `id` + `defaultMessage`, no computed/concatenated ids.
+4. **Catalog** — add new strings to `src/i18n/en_US.json` (alias `@i18n`).
+
+When reviewing an edit, scan the diff for new JSX text / `alt` / `aria-label` / `placeholder` / `title` that isn't wrapped and fix it. For automated enforcement, wire an ESLint rule (`formatjs/no-literal-string-in-jsx` or `react-intl/no-literal-string`) into the project.

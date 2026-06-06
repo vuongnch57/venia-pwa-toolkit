@@ -1,14 +1,16 @@
 # venia-pwa-toolkit
 
-A Claude Code plugin packaging the reusable knowledge for building **Magento PWA
-Studio / Venia** override-based storefronts: the override resolver, intercept
-patterns, conventions, and the day-to-day workflows as skills.
+Reusable knowledge for building **Magento PWA Studio / Venia** override-based
+storefronts — the override resolver, intercept patterns, conventions, and the
+day-to-day workflows. Packaged for **Claude Code** (as a plugin with skills) and
+**Cursor** (as copy-in rules), from one source of truth.
 
 ## What's inside
 
 | Path | Purpose |
 |---|---|
-| `skills/` | On-demand workflows (override, route, pagebuilder type, splice, talon, i18n, css, bootstrap) |
+| `skills/` | Claude Code on-demand workflows (override, route, pagebuilder type, splice, talon, i18n, css, bootstrap) |
+| `cursor-rules/` | Cursor `.mdc` rules — copy into a project's `.cursor/rules/` (mirrors the 8 skills + conventions) |
 | `templates/` | Copy-in infra: `VeniaResolverPlugin.js`, `local-intercept.template.js`, `extend-configured-route.js`, `CLAUDE.partial.md` |
 | `settings.partial.json` | Reusable permission deny-globs for Magento projects |
 
@@ -54,6 +56,26 @@ skill fires, or check `/help`.
 Then run the **venia-bootstrap** skill once to wire the resolver, aliases, and
 driver mapping. Paste `templates/CLAUDE.partial.md` into the project's CLAUDE.md and
 merge `settings.partial.json` into `.claude/settings.json`.
+
+## Use with Cursor
+
+Cursor's native agent doesn't read Claude Code plugins, but the same knowledge ships
+as Cursor rules under `cursor-rules/`. Unlike the Claude plugin (installed once,
+centrally), Cursor rules live **per project** — copy them into each project's
+`.cursor/rules/`:
+
+```
+mkdir -p .cursor/rules
+cp /path/to/venia-pwa-toolkit/cursor-rules/*.mdc .cursor/rules/
+```
+
+How they attach:
+- `venia-conventions.mdc` — `alwaysApply: true` (always in context).
+- the rest — scoped by `globs` (e.g. `venia-override` on `src/overrides/**`,
+  `venia-i18n` on `src/**/*.{js,jsx}`) so they auto-attach when you edit matching files.
+
+Running the **`claude` CLI inside Cursor's integrated terminal** instead uses the
+real plugin — no copying needed.
 
 ## Caveat — path depth
 

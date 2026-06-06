@@ -1,0 +1,28 @@
+---
+description: Register a custom Venia route via routes.tap in local-intercept.js.
+globs: src/targets/**
+alwaysApply: false
+---
+
+# Add a custom route
+
+Tap `targets.of('@magento/venia-ui').routes.tap` in `src/targets/local-intercept.js`.
+
+1. Build the page component in `src/components/` (not `overrides/`); one component per file; wrap copy in react-intl.
+2. Push a route:
+   ```js
+   targets.of('@magento/venia-ui').routes.tap(routes => {
+     routes.push({
+       name: 'Thank you page',
+       pattern: '/checkout/success',
+       path: require.resolve('../components/ThankYouPage'),
+       exact: true
+     });
+     return routes;
+   });
+   ```
+   - `path` uses `require.resolve('../components/<Comp>')` (relative to `src/targets/`).
+   - `pattern` supports params (`/order-detail/:orderNumber`).
+3. **Authed routes** (`authed: true, redirectTo: '/'`) render through the `customRoutes` mechanism in `extend-configured-route.js` — ensure `extendConfiguredRoute(targets)` runs.
+
+To change an existing Venia route, fork its component (override) instead of adding a duplicate.

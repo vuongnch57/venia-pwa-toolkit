@@ -1,0 +1,47 @@
+---
+description: Magento PWA Studio / Venia project conventions — override resolution, aliases, intercept patterns, i18n, Tailwind, icons, build quirks.
+globs:
+alwaysApply: true
+---
+
+# Magento PWA Studio / Venia — Conventions
+
+## Override Resolution
+- `src/targets/local-intercept.js` registers `VeniaResolverPlugin` for `@magento/venia-ui/lib`, `@magento/peregrine/lib`, `@magento/pagebuilder/lib` → resolves to `src/overrides/<package>/...` when a mirrored file exists (mirror the `lib/` tree from `node_modules`).
+- Root `local-intercept.js` is a stub; real taps live under `src/targets/`.
+- Keep imports as `@magento/...` so the resolver can swap in overrides.
+- In a component override, import the **local** `./component.module.css`, not the CSS path inside `node_modules`.
+
+## Path Aliases
+- `@/` → `src`, plus `@components`, `@utils`, `@hooks`, `@talons`, `@overrides`, `@i18n`. Prefer `@/...` for app code.
+
+## Intercept Patterns
+- Targetables: replace a default export via `esModule().spliceSource(...)`; inject providers into `App/contextProvider.js` via `reactComponent().insertBeforeSource(...)`. `spliceSource` `remove` is a character length; forward-slash absolute paths.
+- `routes.tap` for custom routes (`require.resolve('../components/...')`; route components go in `src/components/`, not `overrides/`).
+- `customContentTypes.tap` for Page Builder types pointing at `src/overrides/pagebuilder/...`.
+
+## Feature Layout
+- `src/components/` — new screens/features (not under `overrides/` unless replacing Venia).
+- `src/talons/` — talons + `.gql.js` for new behavior.
+- `src/overrides/peregrine/` — forked core talons. `src/overrides/venia-ui/` — forked UI. `src/overrides/pagebuilder/` — content types.
+- `src/contexts/` — app-level providers.
+
+## Component & Copy Rules (always)
+- **All user-facing text goes through react-intl** — `<FormattedMessage />` or `formatMessage({ id, defaultMessage })`. No bare literals in JSX text, `alt`, `aria-label`, `placeholder`, `title`.
+- **One component per file.** Never declare multiple React components in a single file.
+- **Split when it grows** — extract sub-components into their own files.
+
+## i18n
+- Catalog at `src/i18n/en_US.json` (alias `@i18n`). With the Field `Message` override, validators return `{ id, defaultMessage }`, not strings. Keep strings statically extractable.
+
+## Tailwind in CSS Modules
+- Separator is `_` (e.g. `md_pt-10`). Use `composes: ... from global`. Theme extends `@magento/pwa-theme-venia`.
+
+## Loading States
+- Prefer a page **shimmer**; avoid `fullPageLoadingIndicator`. Align shimmer spacing with the real page.
+
+## Icons
+- New icons in `src/components/Icons/` as inline-SVG React components. **No `react-feather`**. From Figma: clone the SVG into a JS icon component, do not substitute a library icon.
+
+## Build / Node
+- Production build may need `NODE_OPTIONS=--openssl-legacy-provider`. If webpack fails on `??` / `?.`, rewrite with explicit checks and `||`.

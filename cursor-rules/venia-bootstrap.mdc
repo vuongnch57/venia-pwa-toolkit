@@ -1,0 +1,19 @@
+---
+description: One-time setup of Venia override infrastructure (resolver, local-intercept, aliases, drivers). Reference when wiring a fresh project.
+globs:
+alwaysApply: false
+---
+
+# Bootstrap Venia override infrastructure
+
+One-time per project. Templates live in this toolkit's `templates/` directory.
+
+1. **Copy targets** into `src/targets/`: `VeniaResolverPlugin.js` (verbatim), `extend-configured-route.js` (verbatim), `local-intercept.template.js` → `local-intercept.js`.
+2. **Verify path depth** — the `path.resolve(__dirname, '..', '..', ...)` hops assume this file sits at `<project>/src/targets/`. Confirm they reach the project root and `node_modules/`; adjust `..` counts if layout differs. (Most common copy break.)
+3. **Stub root intercept** — root `local-intercept.js`: `module.exports = require('./src/targets/local-intercept');`
+4. **Rename resolver namespace** from `myorg/...` to your slug.
+5. **Path aliases** in webpack `resolve.alias` AND `jsconfig.json`: `@/`→`src`, `@components`, `@utils`, `@hooks`, `@talons`, `@overrides`, `@i18n`.
+6. **Driver mapping** — `package.json` `browser`: `{ "@magento/venia-drivers": "src/drivers" }`; create `src/drivers/index.js` re-exporting `@magento/venia-ui/lib/drivers`.
+7. **Build env** — note `NODE_OPTIONS=--openssl-legacy-provider` for production; rewrite `??`/`?.` with explicit checks if webpack chokes.
+
+Verify with a trivial override mirrored under `src/overrides/venia-ui/...` and confirm the resolver log line `...-override-resolver path: <old> => <new>` appears during build.

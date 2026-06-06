@@ -1,0 +1,18 @@
+---
+description: How to override/fork a Venia, Peregrine, or Page Builder file via the resolver (mirror under src/overrides).
+globs: src/overrides/**
+alwaysApply: false
+---
+
+# Override a Venia / Peregrine / Page Builder file
+
+The resolver swaps `@magento/<package>/lib/<path>` for `src/overrides/<package>/<path>` when the mirrored file exists.
+
+1. **Find the exact source** — grep the symbol inside `node_modules/@magento/<venia-ui|peregrine|pagebuilder>/lib/` before copying.
+2. **Mirror the path** to `src/overrides/<package>/<same relative path>`.
+3. **Keep `@magento/...` imports intact** — do NOT rewrite them to relative `node_modules` paths; the resolver redirects them.
+4. **CSS is the exception** — change `.module.css` imports to local `./...module.css`, copy the CSS file too if styling.
+5. **Split mixed files** — if the forked file declares multiple components, split into one-per-file.
+6. **Wrap copy in react-intl** — any user-facing string must use `<FormattedMessage />` / `formatMessage`.
+
+Use this for replacing core behavior. For new additive behavior use a talon in `src/talons/` or a component in `src/components/`. To swap a whole module export use the targetable-splice approach.
