@@ -7,20 +7,23 @@ description: Style a Venia component with Tailwind in CSS modules, handle loadin
 
 ## Tailwind-in-CSS-modules
 
+- **Style with Tailwind via `@apply`** inside `.module.css` — prefer `@apply` over
+  `composes: ... from global`. Reach for raw CSS only when no utility fits.
 - Separator is `_` (e.g. `md_pt-10`, `hover_text-black`).
-- Compose Tailwind classes: `composes: ... from global` inside `.module.css`.
+- **Use arbitrary values when no token fits** rather than hand-written CSS, e.g.
+  `@apply py-[13px] w-[100px]`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
 - **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
   many utilities — `duration-*` / `transition-duration` is the recurring one
   (`The duration-150 class does not exist`). Verify the utility is enabled in
-  `theme.js`/the preset, or define it inside an `@layer`.
+  `theme.js`/the preset, or add it there.
 - **Never `@apply` a utility inside a class of the same name** — `.grid { @apply grid }`
   creates a circular dependency and fails the build. Rename the class or apply on a
   different selector.
-- **Use theme colors, not the default Tailwind palette.** Use project tokens from
-  `theme.js` (e.g. `primary`, `black-light`, `primary-superLight`), not `gray-700` /
-  `gray-900` / etc.
+- **Colors come from `theme.js`.** Use the defined color classes (e.g. `text-primary`,
+  `bg-black-light`), never the default Tailwind palette (`gray-700`…) or raw hex. **If
+  the color you need isn't in `theme.js`, add it there first**, then use the class.
 - **Responsive by default** — style for mobile and desktop; when adjusting one
   breakpoint, confirm the other still holds.
 

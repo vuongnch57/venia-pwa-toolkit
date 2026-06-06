@@ -39,10 +39,12 @@ alwaysApply: true
 - Catalog at `src/i18n/en_US.json` (alias `@i18n`). With the Field `Message` override, validators return `{ id, defaultMessage }`, not strings. Keep strings statically extractable.
 
 ## Tailwind in CSS Modules
-- Separator is `_` (e.g. `md_pt-10`). Use `composes: ... from global`. Theme extends `@magento/pwa-theme-venia`.
-- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or define in an `@layer`.
+- **Style with Tailwind via `@apply`** in `.module.css` — prefer `@apply` over `composes: ... from global`; raw CSS only when no utility fits.
+- Separator is `_` (e.g. `md_pt-10`). Theme extends `@magento/pwa-theme-venia`.
+- **Use arbitrary values when no token fits** (e.g. `@apply py-[13px] w-[100px]`).
+- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or add it there.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply grid }`) — circular dependency, build fails.
-- **Use theme colors from `theme.js`** (e.g. `primary`, `black-light`), not the default Tailwind palette (`gray-700`, etc.).
+- **Colors come from `theme.js`** — use defined classes (`text-primary`, `bg-black-light`), not the default palette (`gray-700`…) or raw hex. If a color isn't there, add it to `theme.js` first.
 
 ## Loading States
 - Prefer a **shimmer skeleton that mirrors the real page/section layout** while an API loads (match structure + spacing so the layout doesn't jump). Avoid `fullPageLoadingIndicator`.

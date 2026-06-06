@@ -15,11 +15,14 @@ when the mirrored file exists. To override, recreate the file at the mirrored pa
    file before copying — names are not always where you'd guess.
 2. **Mirror the path.** Copy the file to `src/overrides/<package>/<same relative path>`.
    `<package>` is `venia-ui`, `peregrine`, or `pagebuilder`.
-3. **Keep `@magento/...` imports intact.** Do NOT rewrite imports to relative
-   `node_modules` paths — the resolver redirects `@magento/...` imports to your
-   overrides automatically. Rewriting them defeats the resolver.
-4. **CSS is the exception.** Change any `.module.css` import to the **local**
-   `./component.module.css`, and copy that CSS file alongside if you touch styles.
+3. **Fix imports to absolute `@magento/...` paths after copying.** The copied file's
+   *relative* imports (e.g. `../../components/Foo`, `../util/bar`) point inside the lib
+   tree and won't resolve from the override location — rewrite them to
+   `@magento/venia-ui/lib/...` or `@magento/peregrine/lib/...` so they resolve (and get
+   override-swapped by the resolver). Leave any imports that are already `@magento/...`
+   as-is.
+4. **CSS is the exception.** Keep the `.module.css` import **local**
+   (`./component.module.css`), and copy that CSS file alongside if you touch styles.
 5. **Split mixed files.** If the forked file declares more than one component,
    split into one component per file as you fork it (project rule) rather than
    copying the mixed file verbatim.

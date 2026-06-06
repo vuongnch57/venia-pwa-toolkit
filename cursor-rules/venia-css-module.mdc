@@ -7,13 +7,14 @@ alwaysApply: false
 # Tailwind in CSS modules + loading + icons
 
 ## Tailwind-in-CSS-modules
+- **Style with Tailwind via `@apply`** inside `.module.css` — prefer `@apply` over `composes: ... from global`; raw CSS only when no utility fits.
 - Separator is `_` (e.g. `md_pt-10`, `hover_text-black`).
-- Compose with `composes: ... from global` inside `.module.css`.
+- **Use arbitrary values when no token fits** (e.g. `@apply py-[13px] w-[100px]`) rather than hand-written CSS.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
-- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or define in an `@layer`.
+- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or add it there.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply grid }`) — circular dependency, build fails.
-- **Use theme colors from `theme.js`** (`primary`, `black-light`, …), not the default Tailwind palette (`gray-700`, etc.).
+- **Colors come from `theme.js`** — use defined classes (`text-primary`, `bg-black-light`), never the default palette (`gray-700`…) or raw hex. If a color isn't in `theme.js`, add it there first.
 - **Responsive by default** — mobile AND desktop; when adjusting one breakpoint, confirm the other still holds.
 
 ## Loading states

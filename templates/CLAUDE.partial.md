@@ -81,16 +81,22 @@
 
 ## Tailwind in Venia CSS Modules
 
-- Separator is `_` (e.g. `md_pt-10`). Use `composes: ... from global` in `.module.css`.
+- **Style with Tailwind via `@apply`** in `.module.css` — prefer `@apply` over
+  `composes: ... from global`. Reach for raw CSS only when no utility fits.
+- Separator is `_` (e.g. `md_pt-10`).
+- **Use arbitrary values when no token fits** instead of hand-written CSS, e.g.
+  `@apply py-[13px] w-[100px]`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
   many utilities (e.g. `duration-*` / `transition-duration` → `The duration-150 class
-  does not exist`). Verify the utility is enabled in `theme.js`/the preset, or define
-  it in an `@layer`.
+  does not exist`). Verify the utility is enabled in `theme.js`/the preset, or add it
+  there.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply
   grid }`) — it creates a circular dependency and fails the build.
-- **Use theme colors, not the default Tailwind palette.** Use the project tokens from
-  `theme.js` (e.g. `primary`, `black-light`), not `gray-700` / `gray-900` / etc.
+- **Colors come from `theme.js`.** Use the defined color classes (e.g. `text-primary`,
+  `bg-black-light`), not the default Tailwind palette (`gray-700` / `gray-900`) or raw
+  hex. **If the color you need isn't in `theme.js`, add it there first**, then use the
+  class.
 
 ## Loading States
 
