@@ -14,18 +14,35 @@ description: Style a Venia component with Tailwind in CSS modules, handle loadin
   `@apply py-[13px] w-[100px]`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
-- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
-  many utilities — `duration-*` / `transition-duration` is the recurring one
-  (`The duration-150 class does not exist`). Verify the utility is enabled in
-  `theme.js`/the preset, or add it there.
+- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset has
+  incomplete numeric scales — confirmed missing: `duration-*` (`The duration-150 class
+  does not exist`), `size-5` (→ use `w-5 h-5`), `min-w-40` (→ `min-w-[10rem]`).
+  - **Rule:** when webpack reports ``The `X-N` class does not exist``, convert `N` to
+    its standard Tailwind rem value and rewrite as `X-[Nrem]` (e.g. `40` = `10rem` →
+    `min-w-[10rem]`) — don't guess at a different numeric step. (For `size-*`, split into
+    `w-*`/`h-*`.) Or add the value to `theme.js`.
 - **Never `@apply` a utility inside a class of the same name** — `.grid { @apply grid }`
   creates a circular dependency and fails the build. Rename the class or apply on a
   different selector.
-- **Colors come from `theme.js`.** Use the defined color classes (e.g. `text-primary`,
-  `bg-black-light`), never the default Tailwind palette (`gray-700`…) or raw hex. **If
-  the color you need isn't in `theme.js`, add it there first**, then use the class.
 - **Responsive by default** — style for mobile and desktop; when adjusting one
   breakpoint, confirm the other still holds.
+
+## Colors — `theme.js` is the single source (hard rule)
+
+- **Grep before adding.** Search `theme.js` `extend.colors` for an existing entry first.
+- **No raw hex anywhere** — `bg-[#hex]`/`text-[#hex]` arbitrary utilities AND plain CSS
+  `color:` / `background-color:` / `border-color: #hex` declarations are equally
+  forbidden. Grep for both (`-\[#` and `#` in declarations) before adding a color.
+- **Pick the right naming convention for what the color represents:**
+  - **Semantic group** named after the CSS class/state it backs, for component-state
+    colors shared across components — e.g. `field: { DEFAULT, error, disabled }` →
+    `bg-field`, `bg-field-error`, `bg-field-disabled`.
+  - **Scale-style palette** with simple sequential numeric suffixes (`gray.1`..`gray.4`,
+    `orange.1`) for general-purpose text/icon grays and accents. Explicitly **NOT**
+    Tailwind's 50–950 scale — that collides with colors already used elsewhere
+    (`gray-700`/`gray-800`/`orange-50`…).
+- **Don't duplicate an existing brand color** into a new palette — e.g. keep
+  `primary: '#FF6900'` under `primary`, don't copy it into a new `orange` group.
 
 ## Loading states
 
@@ -43,5 +60,12 @@ description: Style a Venia component with Tailwind in CSS modules, handle loadin
 - **From Figma MCP:** when a design node is an SVG icon, *clone* it into a JS icon
   component under `src/components/Icons/` — inline the SVG markup as a React
   component. Do not substitute a react-feather equivalent or render the raw asset.
+- **Attribute the source.** Add a one-line comment citing the Figma node, e.g.
+  `// Cloned from Figma \`icon/checked\` (node 115:9791) — selected Checkbox` — keeps
+  it traceable for future re-syncs.
+- **Verify and de-dupe assets before writing components.** Fetch the actual SVG from
+  the Figma MCP asset server (curl), confirm it's really SVG (`file -b`), and `diff`
+  assets that look like duplicates (e.g. two chevron URLs). Byte-identical assets
+  should produce **one shared** icon component, not two.
 - Storybook stories for icons live under `src/.storybook/`
   (`yarn storybook` / `yarn storybook:build`).

@@ -9,8 +9,9 @@ alwaysApply: true
 ## Override Resolution
 - `src/targets/local-intercept.js` registers `VeniaResolverPlugin` for `@magento/venia-ui/lib`, `@magento/peregrine/lib`, `@magento/pagebuilder/lib` → resolves to `src/overrides/<package>/...` when a mirrored file exists (mirror the `lib/` tree from `node_modules`).
 - Root `local-intercept.js` is a stub; real taps live under `src/targets/`.
-- Keep imports as `@magento/...` so the resolver can swap in overrides.
+- Keep imports as `@magento/...` so the resolver can swap in overrides; rewrite a forked file's *relative* imports to `@magento/venia-ui/lib/...` / `@magento/peregrine/lib/...`.
 - In a component override, import the **local** `./component.module.css`, not the CSS path inside `node_modules`.
+- **`classes` prop replaces, doesn't merge** — `mergeClasses` does `Object.assign(default, className, classes)`; a `classes={{ key }}` that isn't defined in the passing component's `.module.css` resolves to `undefined` and silently wipes the child's class. When forking a child, override the parent's CSS module too if it references a missing key.
 
 ## Path Aliases
 - `@/` → `src`, plus `@components`, `@utils`, `@hooks`, `@talons`, `@overrides`, `@i18n`. Prefer `@/...` for app code.
@@ -42,9 +43,9 @@ alwaysApply: true
 - **Style with Tailwind via `@apply`** in `.module.css` — prefer `@apply` over `composes: ... from global`; raw CSS only when no utility fits.
 - Separator is `_` (e.g. `md_pt-10`). Theme extends `@magento/pwa-theme-venia`.
 - **Use arbitrary values when no token fits** (e.g. `@apply py-[13px] w-[100px]`).
-- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or add it there.
+- **Don't assume a stock Tailwind class exists** — incomplete numeric scales; confirmed missing: `duration-*`, `size-5` (→ `w-5 h-5`), `min-w-40` (→ `min-w-[10rem]`). On ``The `X-N` class does not exist``, convert `N` to rem and rewrite as `X-[Nrem]` (40=10rem), or add to `theme.js` — don't guess a different step.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply grid }`) — circular dependency, build fails.
-- **Colors come from `theme.js`** — use defined classes (`text-primary`, `bg-black-light`), not the default palette (`gray-700`…) or raw hex. If a color isn't there, add it to `theme.js` first.
+- **Colors — `theme.js` is the single source (hard rule):** grep `extend.colors` before adding; **no raw hex anywhere** (`bg-[#hex]` AND CSS `color:/background-color:/border-color: #hex` both forbidden); name as a *semantic group* (`field: { error, disabled }` → `bg-field-error`) for shared state colors or a *scale-style palette* (`gray.1`..`gray.4`) — NOT Tailwind's 50–950 scale; don't duplicate a brand color into a new palette.
 
 ## Loading States
 - Prefer a **shimmer skeleton that mirrors the real page/section layout** while an API loads (match structure + spacing so the layout doesn't jump). Avoid `fullPageLoadingIndicator`.

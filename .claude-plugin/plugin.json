@@ -1,6 +1,6 @@
 {
   "name": "venia-pwa-toolkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Skills + infra templates for Magento PWA Studio / Venia override-based storefronts.",
   "author": { "name": "hoangvuong94st" }
 }

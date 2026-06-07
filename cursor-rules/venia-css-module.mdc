@@ -12,10 +12,15 @@ alwaysApply: false
 - **Use arbitrary values when no token fits** (e.g. `@apply py-[13px] w-[100px]`) rather than hand-written CSS.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
 - In a component override, import the **local** `./component.module.css`.
-- **Don't assume a stock Tailwind class exists** — the preset omits many (e.g. `duration-*` → `The duration-150 class does not exist`); verify in `theme.js` or add it there.
+- **Don't assume a stock Tailwind class exists** — the preset has incomplete numeric scales. Confirmed missing: `duration-*`, `size-5` (→ `w-5 h-5`), `min-w-40` (→ `min-w-[10rem]`). When webpack says ``The `X-N` class does not exist``, convert `N` to its rem value and rewrite as `X-[Nrem]` (40 = 10rem), or add it to `theme.js` — don't guess a different numeric step.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply grid }`) — circular dependency, build fails.
-- **Colors come from `theme.js`** — use defined classes (`text-primary`, `bg-black-light`), never the default palette (`gray-700`…) or raw hex. If a color isn't in `theme.js`, add it there first.
 - **Responsive by default** — mobile AND desktop; when adjusting one breakpoint, confirm the other still holds.
+
+## Colors — `theme.js` is the single source (hard rule)
+- **Grep `theme.js` `extend.colors` before adding** a color.
+- **No raw hex anywhere** — `bg-[#hex]`/`text-[#hex]` AND plain CSS `color:`/`background-color:`/`border-color: #hex` are equally forbidden; grep for both before adding.
+- **Naming convention by intent:** *semantic group* named after the class/state it backs for shared component-state colors (`field: { DEFAULT, error, disabled }` → `bg-field-error`); *scale-style palette* with sequential numeric suffixes (`gray.1`..`gray.4`, `orange.1`) for general grays/accents — NOT Tailwind's 50–950 scale (collides with `gray-700`/`orange-50`…).
+- **Don't duplicate a brand color** into a new palette (keep `primary: '#FF6900'` under `primary`).
 
 ## Loading states
 - Prefer a **shimmer skeleton that mirrors the real layout** while an API loads (match structure + spacing so layout doesn't jump). Avoid `fullPageLoadingIndicator`.
@@ -25,3 +30,5 @@ alwaysApply: false
 - New icons in `src/components/Icons/` as JS components with **inline SVG**.
 - **Never use `react-feather`** (or other icon libraries) for app icons.
 - **From Figma:** when a design node is an SVG icon, clone it into a JS icon component under `src/components/Icons/` — inline the SVG markup. Do not substitute a react-feather equivalent or render the raw asset.
+- **Attribute the source** with a one-line comment citing the Figma node (e.g. `// Cloned from Figma \`icon/checked\` (node 115:9791)`).
+- **Verify + de-dupe assets** before writing: curl the SVG from the Figma MCP asset server, confirm with `file -b`, and `diff` likely duplicates — byte-identical assets share ONE component.

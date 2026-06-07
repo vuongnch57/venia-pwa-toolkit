@@ -31,6 +31,25 @@ when the mirrored file exists. To override, recreate the file at the mirrored pa
 7. **No `??` / `?.` in the forked file.** Files under `src/overrides/**` are processed
    by the buildbus babel loader, which rejects nullish coalescing / optional chaining
    (`Module parse failed: Unexpected token`). Use explicit checks and `||`.
+8. **Swap library icons for cloned Figma icons.** If a redesign means a forked
+   component still imports icons from `react-feather` (e.g. Checkbox's
+   `CheckSquare`/`Square`), replace those imports with cloned Figma icon components from
+   `@/components/Icons/` per the icon hard rule — don't leave react-feather in place.
+   See `venia-css-module`.
+
+## Gotchas
+
+- **`classes` prop REPLACES class strings, it does not merge them.** `mergeClasses`
+  does `Object.assign(defaultClasses, classNameAsObject, classes)`, so a `classes`
+  prop value overwrites the child's own class for that key. Concrete footgun:
+  `RadioGroup` passes `classes={{ label: classes.radioLabel, root: classes.radioContainer }}`
+  to each `Radio`. If the parent's `radioGroup.module.css` doesn't define `.radioLabel`,
+  that key resolves to `undefined` and **silently wipes** `Radio`'s own `.label` — your
+  forked `radio.module.css` styles never apply, with no error.
+  - **Rule:** when forking a child component, grep its parents for a
+    `classes={{ ... }}` pass-through. If any referenced key is missing from the parent's
+    `.module.css`, override that parent CSS module too (add the missing class) — not
+    just the child's.
 
 ## When NOT to use this
 

@@ -13,9 +13,17 @@
   resolves to `src/overrides/<package>/...` when a mirrored file exists (mirror the
   `lib/` tree from `node_modules`).
 - Root `local-intercept.js` is a stub; real taps live under `src/targets/`.
-- Keep imports as `@magento/...` so the resolver can swap in overrides.
+- Keep imports as `@magento/...` so the resolver can swap in overrides; rewrite a
+  forked file's *relative* imports to `@magento/venia-ui/lib/...` /
+  `@magento/peregrine/lib/...`.
 - In a component override, import the **local** `./component.module.css`, not the
   CSS path inside `node_modules`.
+- **`classes` prop replaces, doesn't merge.** `mergeClasses` does
+  `Object.assign(default, className, classes)`, so a `classes={{ key: ... }}` value
+  overwrites the child's class for that key. If a parent passes a `classes` key that
+  isn't defined in its own `.module.css`, it resolves to `undefined` and silently wipes
+  the child's class. When forking a child, override the parent's CSS module too if it
+  references a missing key.
 
 ## Path Aliases (webpack)
 
@@ -87,16 +95,28 @@
 - **Use arbitrary values when no token fits** instead of hand-written CSS, e.g.
   `@apply py-[13px] w-[100px]`.
 - Theme extends `@magento/pwa-theme-venia` via `tailwind.config.js` / `theme.js`.
-- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset omits
-  many utilities (e.g. `duration-*` / `transition-duration` → `The duration-150 class
-  does not exist`). Verify the utility is enabled in `theme.js`/the preset, or add it
-  there.
+- **Don't assume a stock Tailwind class exists.** The `pwa-theme-venia` preset has
+  incomplete numeric scales — confirmed missing: `duration-*`, `size-5` (→ `w-5 h-5`),
+  `min-w-40` (→ `min-w-[10rem]`). When webpack reports ``The `X-N` class does not
+  exist``, convert `N` to its standard Tailwind rem value and rewrite as `X-[Nrem]`
+  (e.g. `40` = `10rem`) — don't guess a different numeric step. Or add the value to
+  `theme.js`.
 - **Never `@apply` a utility inside a class of the same name** (e.g. `.grid { @apply
   grid }`) — it creates a circular dependency and fails the build.
-- **Colors come from `theme.js`.** Use the defined color classes (e.g. `text-primary`,
-  `bg-black-light`), not the default Tailwind palette (`gray-700` / `gray-900`) or raw
-  hex. **If the color you need isn't in `theme.js`, add it there first**, then use the
-  class.
+
+### Colors — `theme.js` is the single source (hard rule)
+
+- **Grep `theme.js` `extend.colors` before adding** any color.
+- **No raw hex anywhere** — `bg-[#hex]` / `text-[#hex]` arbitrary utilities AND plain
+  CSS `color:` / `background-color:` / `border-color: #hex` declarations are equally
+  forbidden. Use a `theme.js` class instead.
+- **Naming convention by intent:**
+  - *Semantic group* named after the class/state it backs, for shared component-state
+    colors — `field: { DEFAULT, error, disabled }` → `bg-field`, `bg-field-error`.
+  - *Scale-style palette* with sequential numeric suffixes (`gray.1`..`gray.4`,
+    `orange.1`) for general text/icon grays and accents — **not** Tailwind's 50–950
+    scale (collides with `gray-700` / `orange-50` already in use).
+- **Don't duplicate a brand color** into a new palette (keep `primary` under `primary`).
 
 ## Loading States
 
